@@ -34,6 +34,11 @@ flutter:
     - "assets/icons/logo.png"
     - "assets/icons/google.png"
     - "assets/images/bus.png"
+    - "assets/images/bca.png"
+    - "assets/images/bni.png"
+    - "assets/images/mandiri.png"
+    - "assets/images/dana.png"
+    - "assets/images/ovo.png"
 
   fonts:
     - family: Inter

@@ -1,5 +1,6 @@
 import 'package:Busnow/view/auth_page/login.dart';
 import 'package:Busnow/view/home_page/home.dart';
+import 'package:Busnow/view/payment_page/detail_booking.dart';
 import 'package:Busnow/view/search_page/cari_bus.dart';
 import 'package:Busnow/view/search_page/cari_tiket.dart';
 import 'package:Busnow/view/splash_page/splash.dart';
@@ -18,13 +19,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'BusNow',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF75F6F6)),
         fontFamily: 'Inter',
         useMaterial3: true,
       ),
-      home: SplashPage(),
+      home: BookingDetailPage(),
     );
   }
 }
