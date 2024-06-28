@@ -1,4 +1,6 @@
+import 'package:Busnow/view/payment_page/detail_booking.dart';
 import 'package:Busnow/view/search_page/cari_bus.dart';
+import 'package:Busnow/view/search_page/item_tiket.dart';
 import 'package:flutter/material.dart';
 
 class CariTiketPage extends StatefulWidget {
@@ -131,82 +133,19 @@ class _CariTiketPageState extends State<CariTiketPage> {
                 itemBuilder: (BuildContext context, int index) {
                   return Column(
                     children: [
-                      Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        color: Color(0xFFE5BFBF),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Agen Bus',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Kelas Bus',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Color(0xFFD10303),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 8,
-                                  ),
-                                  Text(
-                                    '00 : 00',
-                                  ),
-                                  SizedBox(
-                                    height: 16,
-                                  ),
-                                  Text(
-                                    '00 : 00',
-                                  ),
-                                ],
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      'Rp 205.000',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        // Handle pesan action
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(0xFFFC8F8F),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        'Pesan',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
+                      BusItem(
+                        agenBus: 'Agen Bus $index',
+                        kelasBus: 'Kelas Bus $index',
+                        keberangkatan: '00 : 00',
+                        kedatangan: '00 : 00',
+                        harga: 'Rp 205.000 / Seat',
+                        onPesan: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const BookingDetailPage(),
+                            ),
+                          );
+                        },
                       ),
                       SizedBox(
                         height: 15,

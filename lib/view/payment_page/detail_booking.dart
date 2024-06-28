@@ -1,3 +1,4 @@
+import 'package:Busnow/view/home_page/home.dart';
 import 'package:Busnow/view/payment_page/metode_pembayaran.dart';
 import 'package:flutter/material.dart';
 
@@ -85,7 +86,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            // Handle booking action
+                            _showSuccessDialog(context);
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -196,5 +197,69 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
         ],
       ),
     );
+  }
+
+  void _showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Column(
+            children: [
+              Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 100,
+              ),
+              SizedBox(height: 16),
+              Text("Pembayaran Berhasil"),
+            ],
+          ),
+          content: Text(
+            "Pesanan Anda telah berhasil diproses.",
+            textAlign: TextAlign.center,
+          ),
+        );
+      },
+    );
+
+    Future.delayed(Duration(seconds: 4), () {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const HomePage(),
+        ),
+      );
+    });
+  }
+
+  void _showFailedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Column(
+            children: [
+              Icon(
+                Icons.remove_circle,
+                color: Colors.redAccent,
+                size: 100,
+              ),
+              SizedBox(height: 16),
+              Text("Pembayaran Gagal"),
+            ],
+          ),
+          content: Text(
+            "Periksa kembali pesanan Anda.",
+            textAlign: TextAlign.center,
+          ),
+        );
+      },
+    );
+
+    Future.delayed(Duration(seconds: 4), () {
+      // Navigator.of(context).pop();
+      // Navigator.of(context).pop();
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    });
   }
 }

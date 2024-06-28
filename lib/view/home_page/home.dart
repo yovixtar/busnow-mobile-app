@@ -1,6 +1,7 @@
 import 'package:Busnow/components/bottom_nav.dart';
 import 'package:Busnow/view/search_page/cari_bus.dart';
 import 'package:Busnow/view/search_page/cari_tiket.dart';
+import 'package:Busnow/view/search_page/cari_tiket_by_agen.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -258,7 +259,12 @@ class _HomePageState extends State<HomePage> {
                               Center(
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    // Handle pesan action
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const CariTiketByAgenPage(),
+                                      ),
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFFFC8F8F),
