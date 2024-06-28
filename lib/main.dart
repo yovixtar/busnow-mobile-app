@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Inter',
         useMaterial3: true,
       ),
-      home: BookingDetailPage(),
+      home: HomePage(),
     );
   }
 }

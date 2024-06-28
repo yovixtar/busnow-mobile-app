@@ -1,4 +1,5 @@
 import 'package:Busnow/view/home_page/home.dart';
+import 'package:Busnow/view/notification_page/list_notif.dart';
 import 'package:Busnow/view/search_page/cari_bus.dart';
 import 'package:flutter/material.dart';
 
@@ -43,8 +44,14 @@ class _BottomNavState extends State<BottomNav> {
           _showComingSoonDialog();
           break;
         case 3:
-          // Handle Notification action
-          _showComingSoonDialog();
+          if (widget.currentPage == 'notification') {
+            break;
+          }
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const ListNotificationPage(),
+            ),
+          );
           break;
         case 4:
           // Handle Profile action

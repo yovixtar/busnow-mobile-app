@@ -1,16 +1,15 @@
 import 'package:Busnow/view/home_page/home.dart';
-import 'package:Busnow/view/notification_page/detail_notif.dart';
 import 'package:Busnow/view/payment_page/metode_pembayaran.dart';
 import 'package:flutter/material.dart';
 
-class BookingDetailPage extends StatefulWidget {
-  const BookingDetailPage({Key? key}) : super(key: key);
+class NotificationDetailPage extends StatefulWidget {
+  const NotificationDetailPage({Key? key}) : super(key: key);
 
   @override
-  State<BookingDetailPage> createState() => _BookingDetailPageState();
+  State<NotificationDetailPage> createState() => _NotificationDetailPageState();
 }
 
-class _BookingDetailPageState extends State<BookingDetailPage> {
+class _NotificationDetailPageState extends State<NotificationDetailPage> {
   final TextEditingController _namaController =
       TextEditingController(text: 'Nama');
   final TextEditingController _keberangkatanController =
@@ -63,7 +62,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
                     _buildInputField(
                       label: 'Nama Penumpang',
                       controller: _namaController,
-                      editable: true,
+                      editable: false,
                     ),
                     _buildInputField(
                       label: 'Keberangkatan',
@@ -82,28 +81,6 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
                       editable: false,
                     ),
                     _buildPaymentMethodField(),
-                    SizedBox(height: 16),
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _showSuccessDialog(context);
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFFC8F8F),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                              vertical: 14, horizontal: 24),
-                        ),
-                        child: Text(
-                          'Pesan Sekarang',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -145,9 +122,6 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
                     )
                   : UnderlineInputBorder(),
               hintStyle: TextStyle(color: Colors.black54),
-              suffixIcon: isSpecial
-                  ? Icon(Icons.arrow_right, color: Colors.grey)
-                  : null,
             ),
             style: TextStyle(color: Colors.black),
             validator: (value) {
@@ -168,37 +142,18 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Metode Pembayaran',
-                  style: TextStyle(fontSize: 16, color: Colors.black)),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PilihMetodePembayaranPage(),
-                    ),
-                  );
-                },
-                child: Text(
-                  'Pilih Pembayaran',
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            ],
+          Text(
+            'Metode Pembayaran',
+            style: TextStyle(fontSize: 16, color: Colors.black),
           ),
           TextFormField(
             controller: _metodePembayaranController,
             readOnly: true,
             decoration: InputDecoration(
               prefixText: 'Saldo  |  ',
-              fillColor: Colors.white,
+              fillColor: Colors.transparent,
               filled: true,
-              border: OutlineInputBorder(
-                borderSide: BorderSide.none,
-                borderRadius: BorderRadius.circular(8),
-              ),
+              border: UnderlineInputBorder(),
               hintStyle: TextStyle(color: Colors.black54),
             ),
             style: TextStyle(color: Colors.black),
@@ -206,71 +161,5 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
         ],
       ),
     );
-  }
-
-  void _showSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Column(
-            children: [
-              Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 100,
-              ),
-              SizedBox(height: 16),
-              Text("Pembayaran Berhasil"),
-            ],
-          ),
-          content: Text(
-            "Pesanan Anda telah berhasil diproses.",
-            textAlign: TextAlign.center,
-          ),
-        );
-      },
-    );
-
-    Future.delayed(Duration(seconds: 4), () {
-      Navigator.of(context).pop();
-      // Navigator.of(context).pop();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const NotificationDetailPage(),
-        ),
-      );
-    });
-  }
-
-  void _showFailedDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Column(
-            children: [
-              Icon(
-                Icons.remove_circle,
-                color: Colors.redAccent,
-                size: 100,
-              ),
-              SizedBox(height: 16),
-              Text("Pembayaran Gagal"),
-            ],
-          ),
-          content: Text(
-            "Periksa kembali pesanan Anda.",
-            textAlign: TextAlign.center,
-          ),
-        );
-      },
-    );
-
-    Future.delayed(Duration(seconds: 4), () {
-      // Navigator.of(context).pop();
-      // Navigator.of(context).pop();
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
   }
 }
