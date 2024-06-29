@@ -63,14 +63,14 @@ class _LoginPageState extends State<LoginPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Email',
+                          'Email / Username',
                           style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(height: 8),
                         TextFormField(
                           controller: _emailController,
                           decoration: InputDecoration(
-                            hintText: 'Masukan email anda',
+                            hintText: 'Masukan email / username anda',
                             filled: true,
                             fillColor: Color(0xFFD9D9D9),
                             border: OutlineInputBorder(
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Mohon masukan email anda';
+                              return 'Mohon masukan email / username anda';
                             }
                             return null;
                           },
