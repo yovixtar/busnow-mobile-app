@@ -34,7 +34,7 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
           },
         ),
         title: Text(
-          'Booking Detail',
+          'E-Ticket',
           style: TextStyle(
             color: Colors.black,
             fontSize: 24,
@@ -47,44 +47,54 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            color: Color(0xFFF1CBCB),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildInputField(
-                      label: 'Nama Penumpang',
-                      controller: _namaController,
-                      editable: false,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/icons/logo.png',
+                width: 150,
+                height: 150,
+              ),
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                color: Color(0xFFF1CBCB),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildInputField(
+                          label: 'Nama Penumpang',
+                          controller: _namaController,
+                          editable: false,
+                        ),
+                        _buildInputField(
+                          label: 'Keberangkatan',
+                          controller: _keberangkatanController,
+                          editable: false,
+                        ),
+                        _buildInputField(
+                          label: 'Tipe / Kelas',
+                          controller: _kelasController,
+                          editable: false,
+                          isSpecial: true,
+                        ),
+                        _buildInputField(
+                          label: 'Tanggal Berangkat',
+                          controller: _tanggalController,
+                          editable: false,
+                        ),
+                        _buildPaymentMethodField(),
+                      ],
                     ),
-                    _buildInputField(
-                      label: 'Keberangkatan',
-                      controller: _keberangkatanController,
-                      editable: false,
-                    ),
-                    _buildInputField(
-                      label: 'Tipe / Kelas',
-                      controller: _kelasController,
-                      editable: false,
-                      isSpecial: true,
-                    ),
-                    _buildInputField(
-                      label: 'Tanggal Berangkat',
-                      controller: _tanggalController,
-                      editable: false,
-                    ),
-                    _buildPaymentMethodField(),
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),

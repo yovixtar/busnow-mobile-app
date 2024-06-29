@@ -2,6 +2,7 @@ import 'package:Busnow/components/bottom_nav.dart';
 import 'package:Busnow/view/notification_page/detail_notif.dart';
 import 'package:Busnow/view/notification_page/item_notif.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ListNotificationPage extends StatefulWidget {
   const ListNotificationPage({Key? key}) : super(key: key);
@@ -11,6 +12,9 @@ class ListNotificationPage extends StatefulWidget {
 }
 
 class _ListNotificationPageState extends State<ListNotificationPage> {
+  String formattedDate =
+      DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(DateTime.now());
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -55,15 +59,10 @@ class _ListNotificationPageState extends State<ListNotificationPage> {
                     return Column(
                       children: [
                         NotificationItem(
-                          title: 'Pesanan Anda Telah Diproses',
-                          subtitle: 'Nomor Pesanan: #123456',
-                          time: '2 hours ago',
-                          onTap: () {
-                            // Handle onTap action, misalnya tampilkan detail pesanan
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) =>
-                                    const NotificationDetailPage()));
-                          },
+                          kota: 'Tiket Kota ke Kota',
+                          time: '${formattedDate} \n00:00 - 00:00',
+                          agen: 'Agen bus',
+                          payment: 200000,
                         ),
                         SizedBox(
                           height: 5,
