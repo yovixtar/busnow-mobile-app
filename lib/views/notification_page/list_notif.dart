@@ -1,10 +1,8 @@
 import 'package:Busnow/models/payment_models.dart';
 import 'package:Busnow/services/api_payment.dart';
 import 'package:Busnow/views/components/bottom_nav.dart';
-import 'package:Busnow/views/notification_page/detail_notif.dart';
 import 'package:Busnow/views/notification_page/item_notif.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class ListNotificationPage extends StatefulWidget {
   const ListNotificationPage({Key? key}) : super(key: key);
