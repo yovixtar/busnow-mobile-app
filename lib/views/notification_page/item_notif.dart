@@ -1,19 +1,33 @@
 import 'package:Busnow/views/notification_page/detail_notif.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
 class NotificationItem extends StatelessWidget {
-  final String kota;
-  final String agen;
-  final int payment;
-  final String time;
+  final String id_pesanan;
+  final String nama;
+  final String keberangkatan;
+  final String kelas;
+  final String tanggal;
+  final String metode_pembayaran;
+  final String total;
+  final String waktu_pesan;
 
   const NotificationItem({
-    required this.kota,
-    required this.agen,
-    required this.payment,
-    required this.time,
+    required this.id_pesanan,
+    required this.nama,
+    required this.keberangkatan,
+    required this.kelas,
+    required this.tanggal,
+    required this.metode_pembayaran,
+    required this.total,
+    required this.waktu_pesan,
     Key? key,
   }) : super(key: key);
+
+  String formatTanggal(String tanggal) {
+    DateTime date = DateTime.parse(tanggal);
+    return DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(date);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +49,7 @@ class NotificationItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      kota,
+                      keberangkatan,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -43,7 +57,7 @@ class NotificationItem extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      time,
+                      formatTanggal(tanggal),
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -56,14 +70,7 @@ class NotificationItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    agen,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  SizedBox(height: 8),
+                  SizedBox(height: 16),
                   Icon(
                     Icons.chevron_right,
                     color: Colors.grey[600],
@@ -103,7 +110,7 @@ class NotificationItem extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Pembelian tiket bus',
+                'Pembelian Tiket Bus',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -112,7 +119,7 @@ class NotificationItem extends StatelessWidget {
               ),
               SizedBox(height: 8),
               Text(
-                kota,
+                keberangkatan,
                 style: TextStyle(
                   fontSize: 16,
                 ),
@@ -120,7 +127,7 @@ class NotificationItem extends StatelessWidget {
               ),
               SizedBox(height: 8),
               Text(
-                time,
+                formatTanggal(tanggal),
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -148,7 +155,7 @@ class NotificationItem extends StatelessWidget {
               ),
               SizedBox(height: 8),
               Text(
-                'Total: Rp ${formatedRp(payment)}',
+                'Total: Rp ${formatRibuan(total)}',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -158,12 +165,20 @@ class NotificationItem extends StatelessWidget {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  // Navigator.of(context).pop();
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (context) => NotificationDetailPage(),
-                  //   ),
-                  // );
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => NotificationDetailPage(
+                        nama: nama,
+                        keberangkatan: keberangkatan,
+                        kelas: kelas,
+                        tanggal: tanggal,
+                        metode_pembayaran: metode_pembayaran,
+                        total: total,
+                        waktu_pesan: waktu_pesan,
+                      ),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFFC8F8F),
@@ -203,10 +218,13 @@ class NotificationItem extends StatelessWidget {
     );
   }
 
-  String formatedRp(int value) {
-    return value.toString().replaceAllMapped(
-          RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-          (Match match) => '${match[1]}.',
-        );
+  String formatRibuan(String harga) {
+    try {
+      return NumberFormat.currency(
+              locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0)
+          .format(int.parse(harga.replaceAll('.', '')));
+    } catch (e) {
+      return harga;
+    }
   }
 }

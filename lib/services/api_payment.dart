@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Busnow/config.dart';
+import 'package:Busnow/models/payment_models.dart';
 import 'package:Busnow/services/session.dart';
 import 'package:http/http.dart' as http;
 
@@ -29,6 +30,31 @@ class APIPaymentService {
       return responseData['data'];
     } else {
       return {'error': responseData['message']};
+    }
+  }
+
+  Future<List<DaftarPesananModel>> getPesanan() async {
+    var bearerToken = await SessionManager.getBearerToken();
+    if (bearerToken != null) {
+      var url = Uri.parse("$baseUrl/pesanan");
+
+      var response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $bearerToken'},
+      );
+
+      var responseData = jsonDecode(response.body);
+      if (responseData['code'] == 200) {
+        var data = responseData['data'] as List;
+        List<DaftarPesananModel> pesanans = data
+            .map((pesanan) => DaftarPesananModel.fromJson(pesanan))
+            .toList();
+        return pesanans;
+      } else {
+        return [];
+      }
+    } else {
+      return [];
     }
   }
 }

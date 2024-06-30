@@ -115,7 +115,7 @@ class _CariTiketByAgenPageState extends State<CariTiketByAgenPage> {
                           DaftarTiketModel tiket = snapshot.data![index];
                           return Column(
                             children: [
-                              BusItem(
+                              TiketItem(
                                 agenBus: tiket.nama_bus!,
                                 kelasBus: tiket.kelas!,
                                 keberangkatan: tiket.jam_berangkat!,

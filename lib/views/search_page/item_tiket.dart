@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class BusItem extends StatelessWidget {
+class TiketItem extends StatelessWidget {
   final String agenBus;
   final String kelasBus;
   final String keberangkatan;
@@ -10,7 +10,7 @@ class BusItem extends StatelessWidget {
   final String tanggal;
   final VoidCallback onPesan;
 
-  const BusItem({
+  const TiketItem({
     required this.agenBus,
     required this.kelasBus,
     required this.keberangkatan,
