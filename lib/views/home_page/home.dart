@@ -47,25 +47,25 @@ class _HomePageState extends State<HomePage> {
     return dataBus;
   }
 
-  void _showComingSoonDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Coming Soon'),
-          content: Text('This feature is coming soon.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showComingSoonDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Coming Soon'),
+  //         content: Text('This feature is coming soon.'),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text('OK'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   void _showBalanceInputDialog() {
     showDialog(
@@ -170,7 +170,9 @@ class _HomePageState extends State<HomePage> {
                               // Handle search action
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => const CariBusPage(),
+                                  builder: (context) => CariBusPage(
+                                    tujuan: _searchController.text,
+                                  ),
                                 ),
                               );
                             },
@@ -264,7 +266,8 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(width: 16),
                     Expanded(
                       child: GestureDetector(
-                        onTap: _showComingSoonDialog,
+                        // onTap: _showComingSoonDialog,
+                        onTap: null,
                         child: Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),

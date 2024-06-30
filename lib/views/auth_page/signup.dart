@@ -48,25 +48,25 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  void _showComingSoonDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Coming Soon'),
-          content: Text('This feature is coming soon.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showComingSoonDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Coming Soon'),
+  //         content: Text('This feature is coming soon.'),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text('OK'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -291,7 +291,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         SizedBox(height: 16),
                         Center(
                           child: ElevatedButton.icon(
-                            onPressed: _showComingSoonDialog,
+                            // onPressed: _showComingSoonDialog,
+                            onPressed: null,
                             icon: Image.asset(
                               'assets/icons/google.png',
                               width: 24,

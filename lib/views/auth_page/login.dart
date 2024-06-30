@@ -55,25 +55,25 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  void _showComingSoonDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Coming Soon'),
-          content: Text('This feature is coming soon.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showComingSoonDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Coming Soon'),
+  //         content: Text('This feature is coming soon.'),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text('OK'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +166,8 @@ class _LoginPageState extends State<LoginPage> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: _showComingSoonDialog,
+                            // onPressed: _showComingSoonDialog,
+                            onPressed: null,
                             child: Text('Lupa Password?'),
                           ),
                         ),
@@ -224,7 +225,8 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 16),
                         Center(
                           child: ElevatedButton.icon(
-                            onPressed: _showComingSoonDialog,
+                            // onPressed: _showComingSoonDialog,
+                            onPressed: null,
                             icon: Image.asset(
                               'assets/icons/google.png',
                               width: 24,

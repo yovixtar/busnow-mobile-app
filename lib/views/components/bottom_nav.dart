@@ -41,8 +41,7 @@ class _BottomNavState extends State<BottomNav> {
           );
           break;
         case 2:
-          // Handle Calendar action
-          _showComingSoonDialog();
+          // _showComingSoonDialog();
           break;
         case 3:
           if (widget.currentPage == 'notification') {
@@ -68,25 +67,25 @@ class _BottomNavState extends State<BottomNav> {
     });
   }
 
-  void _showComingSoonDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Coming Soon'),
-          content: Text('This feature is coming soon.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showComingSoonDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Coming Soon'),
+  //         content: Text('This feature is coming soon.'),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text('OK'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

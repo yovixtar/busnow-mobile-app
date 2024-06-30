@@ -36,25 +36,25 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void _showComingSoonDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Coming Soon'),
-          content: Text('This feature is coming soon.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showComingSoonDialog(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Coming Soon'),
+  //         content: Text('This feature is coming soon.'),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text('OK'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   void _logout() async {
     await SessionManager.clearToken();
@@ -67,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _updateProfile() {
     if (_formKey.currentState!.validate()) {
-      _showComingSoonDialog(context);
+      // _showComingSoonDialog(context);
     }
   }
 
@@ -128,7 +128,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             right: 0,
                             child: GestureDetector(
                               onTap: () {
-                                _showComingSoonDialog(context);
+                                // _showComingSoonDialog(context);
+                                null;
                               },
                               child: CircleAvatar(
                                 radius: 20,
