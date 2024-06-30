@@ -1,5 +1,5 @@
-import 'package:Busnow/components/bottom_nav.dart';
-import 'package:Busnow/view/search_page/cari_tiket.dart';
+import 'package:Busnow/views/components/bottom_nav.dart';
+import 'package:Busnow/views/search_page/cari_tiket.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';

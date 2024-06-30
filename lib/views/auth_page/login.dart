@@ -1,22 +1,60 @@
-import 'package:Busnow/view/auth_page/login.dart';
+import 'package:Busnow/models/auth_models.dart';
+import 'package:Busnow/services/api_auth.dart';
+import 'package:Busnow/services/session.dart';
+import 'package:Busnow/views/auth_page/signup.dart';
+import 'package:Busnow/views/components/snackbar_utils.dart';
+import 'package:Busnow/views/home_page/home.dart';
 import 'package:flutter/material.dart';
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _rePasswordController = TextEditingController();
   bool _isPasswordVisible = false;
-  bool _isRePasswordVisible = false;
+  String _loginMessage = '';
+  bool _loginStatus = true;
+  bool isLoading = false;
+
+  handleLogin() async {
+    setState(() {
+      isLoading = true;
+    });
+    final result = await APIAuthService().login(
+        credential: _emailController.text, password: _passwordController.text);
+    if (result.containsKey('success')) {
+      if (await SessionManager.hasToken()) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const HomePage(),
+          ),
+        );
+      } else {
+        setState(() {
+          _loginStatus = false;
+        });
+        SnackbarUtils.showErrorSnackbar(context, "Token gagal disimpan");
+      }
+    } else {
+      setState(() {
+        setState(() {
+          _loginStatus = false;
+        });
+        _loginMessage = 'Email / Password atau password anda masukan salah.';
+        SnackbarUtils.showErrorSnackbar(context, _loginMessage);
+      });
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   void _showComingSoonDialog() {
     showDialog(
@@ -47,9 +85,6 @@ class _SignUpPageState extends State<SignUpPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(
-                  height: 20,
-                ),
                 Image.asset(
                   'assets/icons/logo.png',
                   width: 150,
@@ -69,62 +104,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Nama',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        SizedBox(height: 8),
-                        TextFormField(
-                          controller: _nameController,
-                          decoration: InputDecoration(
-                            hintText: 'Masukan nama anda',
-                            filled: true,
-                            fillColor: Color(0xFFD9D9D9),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Mohon masukan nama anda';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          'Username',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        SizedBox(height: 8),
-                        TextFormField(
-                          controller: _usernameController,
-                          decoration: InputDecoration(
-                            hintText: 'Masukan username anda',
-                            filled: true,
-                            fillColor: Color(0xFFD9D9D9),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Mohon masukan username anda';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          'Email',
+                          'Email / Username',
                           style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(height: 8),
                         TextFormField(
                           controller: _emailController,
                           decoration: InputDecoration(
-                            hintText: 'Masukan email anda',
+                            hintText: 'Masukan email / username anda',
                             filled: true,
                             fillColor: Color(0xFFD9D9D9),
                             border: OutlineInputBorder(
@@ -135,7 +122,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Mohon masukan email anda';
+                              return 'Mohon masukan email / username anda';
                             }
                             return null;
                           },
@@ -177,62 +164,37 @@ class _SignUpPageState extends State<SignUpPage> {
                             return null;
                           },
                         ),
-                        SizedBox(height: 16),
-                        Text(
-                          'Konfirmasi Password',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        SizedBox(height: 8),
-                        TextFormField(
-                          controller: _rePasswordController,
-                          decoration: InputDecoration(
-                            hintText: 'Masukan kembali password anda',
-                            filled: true,
-                            fillColor: Color(0xFFD9D9D9),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isRePasswordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isRePasswordVisible = !_isRePasswordVisible;
-                                });
-                              },
-                            ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: _showComingSoonDialog,
+                            child: Text('Lupa Password?'),
                           ),
-                          obscureText: !_isRePasswordVisible,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Mohon masukan kembali password anda';
-                            }
-                            if (value != _passwordController.text) {
-                              return 'Password tidak cocok';
-                            }
-                            return null;
-                          },
                         ),
-                        SizedBox(height: 24),
+                        (!_loginStatus)
+                            ? Text(
+                                "Email / Password atau password anda masukan salah.",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.redAccent,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                            : SizedBox(),
+                        SizedBox(height: 8),
                         Row(
                           children: [
                             Expanded(
                               child: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 30),
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      // handle Signup
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LoginPage(),
-                                        ),
-                                      );
+                                  onPressed: () async {
+                                    if (isLoading) {
+                                      null;
+                                    } else {
+                                      if (_formKey.currentState!.validate()) {
+                                        handleLogin();
+                                      }
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -243,7 +205,14 @@ class _SignUpPageState extends State<SignUpPage> {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
-                                  child: Text('Daftar'),
+                                  child: isLoading
+                                      ? CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                            Colors.white,
+                                          ),
+                                        )
+                                      : Text('Masuk'),
                                 ),
                               ),
                             ),
@@ -251,7 +220,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                         SizedBox(height: 16),
                         Center(
-                          child: Text('atau daftar menggunakan'),
+                          child: Text('atau masuk menggunakan'),
                         ),
                         SizedBox(height: 16),
                         Center(
@@ -281,17 +250,17 @@ class _SignUpPageState extends State<SignUpPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Sudah punya akun? '),
+                            Text('Belum punya akun? '),
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
-                                    builder: (context) => const LoginPage(),
+                                    builder: (context) => const SignUpPage(),
                                   ),
                                 );
                               },
                               child: Text(
-                                'Masuk',
+                                'Daftar',
                                 style: TextStyle(color: Color(0xFF75F6F6)),
                               ),
                             ),

@@ -1,19 +1,52 @@
-import 'package:Busnow/view/auth_page/signup.dart';
-import 'package:Busnow/view/home_page/home.dart';
+import 'package:Busnow/services/api_auth.dart';
+import 'package:Busnow/views/auth_page/login.dart';
+import 'package:Busnow/views/components/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _rePasswordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isRePasswordVisible = false;
+  bool isLoading = false;
+
+  handleSignup() async {
+    setState(() {
+      isLoading = true;
+    });
+    final result = await APIAuthService().signup(
+      nama: _nameController.text,
+      email: _emailController.text,
+      username: _usernameController.text,
+      password: _passwordController.text,
+    );
+    if (result.containsKey('success')) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+        ),
+      );
+    } else {
+      setState(() {
+        SnackbarUtils.showErrorSnackbar(context, result['error']);
+      });
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   void _showComingSoonDialog() {
     showDialog(
@@ -44,6 +77,9 @@ class _LoginPageState extends State<LoginPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                SizedBox(
+                  height: 20,
+                ),
                 Image.asset(
                   'assets/icons/logo.png',
                   width: 150,
@@ -63,14 +99,62 @@ class _LoginPageState extends State<LoginPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Email / Username',
+                          'Nama',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 8),
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            hintText: 'Masukan nama anda',
+                            filled: true,
+                            fillColor: Color(0xFFD9D9D9),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Mohon masukan nama anda';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Username',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 8),
+                        TextFormField(
+                          controller: _usernameController,
+                          decoration: InputDecoration(
+                            hintText: 'Masukan username anda',
+                            filled: true,
+                            fillColor: Color(0xFFD9D9D9),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Mohon masukan username anda';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Email',
                           style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(height: 8),
                         TextFormField(
                           controller: _emailController,
                           decoration: InputDecoration(
-                            hintText: 'Masukan email / username anda',
+                            hintText: 'Masukan email anda',
                             filled: true,
                             fillColor: Color(0xFFD9D9D9),
                             border: OutlineInputBorder(
@@ -81,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Mohon masukan email / username anda';
+                              return 'Mohon masukan email anda';
                             }
                             return null;
                           },
@@ -123,29 +207,60 @@ class _LoginPageState extends State<LoginPage> {
                             return null;
                           },
                         ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: _showComingSoonDialog,
-                            child: Text('Lupa Password?'),
-                          ),
-                        ),
                         SizedBox(height: 16),
+                        Text(
+                          'Konfirmasi Password',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 8),
+                        TextFormField(
+                          controller: _rePasswordController,
+                          decoration: InputDecoration(
+                            hintText: 'Masukan kembali password anda',
+                            filled: true,
+                            fillColor: Color(0xFFD9D9D9),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isRePasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isRePasswordVisible = !_isRePasswordVisible;
+                                });
+                              },
+                            ),
+                          ),
+                          obscureText: !_isRePasswordVisible,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Mohon masukan kembali password anda';
+                            }
+                            if (value != _passwordController.text) {
+                              return 'Password tidak cocok';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 24),
                         Row(
                           children: [
                             Expanded(
                               child: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 30),
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      // Handle login
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const HomePage(),
-                                        ),
-                                      );
+                                  onPressed: () async {
+                                    if (isLoading) {
+                                      null;
+                                    } else {
+                                      if (_formKey.currentState!.validate()) {
+                                        handleSignup();
+                                      }
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -156,7 +271,7 @@ class _LoginPageState extends State<LoginPage> {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
-                                  child: Text('Masuk'),
+                                  child: Text('Daftar'),
                                 ),
                               ),
                             ),
@@ -164,7 +279,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         SizedBox(height: 16),
                         Center(
-                          child: Text('atau masuk menggunakan'),
+                          child: Text('atau daftar menggunakan'),
                         ),
                         SizedBox(height: 16),
                         Center(
@@ -194,17 +309,17 @@ class _LoginPageState extends State<LoginPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Belum punya akun? '),
+                            Text('Sudah punya akun? '),
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
-                                    builder: (context) => const SignUpPage(),
+                                    builder: (context) => const LoginPage(),
                                   ),
                                 );
                               },
                               child: Text(
-                                'Daftar',
+                                'Masuk',
                                 style: TextStyle(color: Color(0xFF75F6F6)),
                               ),
                             ),

@@ -1,5 +1,8 @@
-import 'package:Busnow/view/auth_page/login.dart';
+import 'package:Busnow/services/session.dart';
+import 'package:Busnow/views/auth_page/login.dart';
+import 'package:Busnow/views/home_page/home.dart';
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -28,8 +31,20 @@ class _SplashPageState extends State<SplashPage>
       if (status == AnimationStatus.completed) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                LoginPage(),
+            pageBuilder: (context, animation, secondaryAnimation) {
+              return FutureBuilder<Widget>(
+                future: loginRoute(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    return snapshot.data!;
+                  }
+                },
+              );
+            },
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);
@@ -38,6 +53,19 @@ class _SplashPageState extends State<SplashPage>
         );
       }
     });
+  }
+
+  Future<Widget> loginRoute() async {
+    if (await SessionManager.hasToken()) {
+      String? tokenData = await SessionManager.getBearerToken();
+      if (tokenData != null) {
+        return HomePage();
+      } else {
+        return LoginPage();
+      }
+    } else {
+      return LoginPage();
+    }
   }
 
   @override

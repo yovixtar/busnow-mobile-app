@@ -1,7 +1,7 @@
-import 'package:Busnow/view/home_page/home.dart';
-import 'package:Busnow/view/notification_page/list_notif.dart';
-import 'package:Busnow/view/profile_page/profile.dart';
-import 'package:Busnow/view/search_page/cari_bus.dart';
+import 'package:Busnow/views/home_page/home.dart';
+import 'package:Busnow/views/notification_page/list_notif.dart';
+import 'package:Busnow/views/profile_page/profile.dart';
+import 'package:Busnow/views/search_page/cari_bus.dart';
 import 'package:flutter/material.dart';
 
 class BottomNav extends StatefulWidget {

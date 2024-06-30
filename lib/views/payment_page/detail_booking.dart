@@ -1,6 +1,6 @@
-import 'package:Busnow/view/home_page/home.dart';
-import 'package:Busnow/view/notification_page/detail_notif.dart';
-import 'package:Busnow/view/payment_page/metode_pembayaran.dart';
+import 'package:Busnow/views/home_page/home.dart';
+import 'package:Busnow/views/notification_page/detail_notif.dart';
+import 'package:Busnow/views/payment_page/metode_pembayaran.dart';
 import 'package:flutter/material.dart';
 
 class BookingDetailPage extends StatefulWidget {

@@ -1,5 +1,7 @@
+import 'package:Busnow/services/session.dart';
+import 'package:Busnow/views/auth_page/login.dart';
 import 'package:flutter/material.dart';
-import 'package:Busnow/components/bottom_nav.dart';
+import 'package:Busnow/views/components/bottom_nav.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -15,6 +17,24 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _emailController =
       TextEditingController(text: 'Email');
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final userData = await SessionManager.getData();
+    if (userData != null) {
+      setState(() {
+        _namaController.text = userData['nama'] ?? 'Nama';
+        _usernameController.text = userData['username'] ?? 'Username';
+        _phoneNumberController.text = userData['phone'] ?? '';
+        _emailController.text = userData['email'] ?? 'Email';
+      });
+    }
+  }
 
   void _showComingSoonDialog(BuildContext context) {
     showDialog(
@@ -36,8 +56,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _logout() {
-    // Add logout functionality here
+  void _logout() async {
+    await SessionManager.clearToken();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const LoginPage(),
+      ),
+    );
   }
 
   void _updateProfile() {

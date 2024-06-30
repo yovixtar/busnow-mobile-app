@@ -1,7 +1,7 @@
-import 'package:Busnow/components/bottom_nav.dart';
-import 'package:Busnow/view/search_page/cari_bus.dart';
-import 'package:Busnow/view/search_page/cari_tiket.dart';
-import 'package:Busnow/view/search_page/cari_tiket_by_agen.dart';
+import 'package:Busnow/views/components/bottom_nav.dart';
+import 'package:Busnow/views/search_page/cari_bus.dart';
+import 'package:Busnow/views/search_page/cari_tiket.dart';
+import 'package:Busnow/views/search_page/cari_tiket_by_agen.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {

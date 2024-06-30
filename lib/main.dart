@@ -1,10 +1,10 @@
-import 'package:Busnow/view/auth_page/login.dart';
-import 'package:Busnow/view/home_page/home.dart';
-import 'package:Busnow/view/payment_page/detail_booking.dart';
-import 'package:Busnow/view/profile_page/profile.dart';
-import 'package:Busnow/view/search_page/cari_bus.dart';
-import 'package:Busnow/view/search_page/cari_tiket.dart';
-import 'package:Busnow/view/splash_page/splash.dart';
+import 'package:Busnow/views/auth_page/login.dart';
+import 'package:Busnow/views/home_page/home.dart';
+import 'package:Busnow/views/payment_page/detail_booking.dart';
+import 'package:Busnow/views/profile_page/profile.dart';
+import 'package:Busnow/views/search_page/cari_bus.dart';
+import 'package:Busnow/views/search_page/cari_tiket.dart';
+import 'package:Busnow/views/splash_page/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 

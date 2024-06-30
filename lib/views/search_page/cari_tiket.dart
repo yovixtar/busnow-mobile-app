@@ -1,6 +1,6 @@
-import 'package:Busnow/view/payment_page/detail_booking.dart';
-import 'package:Busnow/view/search_page/cari_bus.dart';
-import 'package:Busnow/view/search_page/item_tiket.dart';
+import 'package:Busnow/views/payment_page/detail_booking.dart';
+import 'package:Busnow/views/search_page/cari_bus.dart';
+import 'package:Busnow/views/search_page/item_tiket.dart';
 import 'package:flutter/material.dart';
 
 class CariTiketPage extends StatefulWidget {
