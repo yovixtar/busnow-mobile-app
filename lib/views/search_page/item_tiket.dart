@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BusItem extends StatelessWidget {
   final String agenBus;
@@ -6,6 +7,7 @@ class BusItem extends StatelessWidget {
   final String keberangkatan;
   final String kedatangan;
   final String harga;
+  final String tanggal;
   final VoidCallback onPesan;
 
   const BusItem({
@@ -14,9 +16,30 @@ class BusItem extends StatelessWidget {
     required this.keberangkatan,
     required this.kedatangan,
     required this.harga,
+    required this.tanggal,
     required this.onPesan,
     Key? key,
   }) : super(key: key);
+
+  String formatTanggal(String tanggal) {
+    DateTime date = DateTime.parse(tanggal);
+    return DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(date);
+  }
+
+  String formatJam(String jam) {
+    DateTime time = DateFormat('HH:mm:ss').parse(jam);
+    return DateFormat('HH:mm').format(time);
+  }
+
+  String formatRibuan(String harga) {
+    try {
+      return NumberFormat.currency(
+              locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0)
+          .format(int.parse(harga.replaceAll('.', '')));
+    } catch (e) {
+      return harga;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +64,9 @@ class BusItem extends StatelessWidget {
                   ),
                 ),
                 Text(
+                  formatTanggal(tanggal),
+                ),
+                Text(
                   kelasBus,
                   style: TextStyle(
                     fontSize: 16,
@@ -51,13 +77,7 @@ class BusItem extends StatelessWidget {
                   height: 8,
                 ),
                 Text(
-                  keberangkatan,
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                Text(
-                  kedatangan,
+                  formatJam(keberangkatan) + ' - ' + formatJam(kedatangan),
                 ),
               ],
             ),
@@ -66,7 +86,7 @@ class BusItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    harga,
+                    formatRibuan(harga) + '/Seat',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(

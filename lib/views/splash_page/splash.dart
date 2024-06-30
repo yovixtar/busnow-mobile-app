@@ -2,7 +2,6 @@ import 'package:Busnow/services/session.dart';
 import 'package:Busnow/views/auth_page/login.dart';
 import 'package:Busnow/views/home_page/home.dart';
 import 'package:flutter/material.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);

@@ -1,15 +1,42 @@
+import 'package:Busnow/models/tiket_models.dart';
+import 'package:Busnow/services/api_tiket.dart';
 import 'package:Busnow/views/payment_page/detail_booking.dart';
 import 'package:Busnow/views/search_page/item_tiket.dart';
 import 'package:flutter/material.dart';
 
 class CariTiketByAgenPage extends StatefulWidget {
-  const CariTiketByAgenPage({Key? key}) : super(key: key);
+  const CariTiketByAgenPage(
+      {Key? key, required this.id_bus, required this.nama})
+      : super(key: key);
+
+  final String? id_bus;
+  final String? nama;
 
   @override
   State<CariTiketByAgenPage> createState() => _CariTiketByAgenPageState();
 }
 
 class _CariTiketByAgenPageState extends State<CariTiketByAgenPage> {
+  late Future<List<DaftarTiketModel>?> _dataTiket;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataTiket = fetchDaftarTiket();
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      _dataTiket = fetchDaftarTiket();
+    });
+  }
+
+  Future<List<DaftarTiketModel>> fetchDaftarTiket() async {
+    List<DaftarTiketModel> dataBus =
+        await APITiketService().getTiketByBus(widget.id_bus);
+    return dataBus;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +79,7 @@ class _CariTiketByAgenPageState extends State<CariTiketByAgenPage> {
                           horizontal: 30,
                         ),
                         child: Text(
-                          'Agen Bus',
+                          widget.nama!,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18,
@@ -67,32 +94,58 @@ class _CariTiketByAgenPageState extends State<CariTiketByAgenPage> {
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 10, // Replace with actual item count
-                itemBuilder: (BuildContext context, int index) {
-                  return Column(
-                    children: [
-                      BusItem(
-                        agenBus: 'Agen Bus $index',
-                        kelasBus: 'Kelas Bus $index',
-                        keberangkatan: '00 : 00',
-                        kedatangan: '00 : 00',
-                        harga: 'Rp 205.000 / Seat',
-                        onPesan: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const BookingDetailPage(),
-                            ),
+              child: FutureBuilder<List<DaftarTiketModel>?>(
+                future: _dataTiket,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No data available'));
+                  } else {
+                    return RefreshIndicator(
+                      onRefresh: _refreshData,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: snapshot
+                            .data!.length, // Replace with actual item count
+                        itemBuilder: (BuildContext context, int index) {
+                          DaftarTiketModel tiket = snapshot.data![index];
+                          return Column(
+                            children: [
+                              BusItem(
+                                agenBus: tiket.nama_bus!,
+                                kelasBus: tiket.kelas!,
+                                keberangkatan: tiket.jam_berangkat!,
+                                kedatangan: tiket.jam_sampai!,
+                                harga: tiket.tarif!,
+                                tanggal: tiket.tanggal_berangkat!,
+                                onPesan: () {
+                                  print(tiket);
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => BookingDetailPage(
+                                        asal: tiket.asal!,
+                                        tujuan: tiket.tujuan!,
+                                        kelas: tiket.kelas!,
+                                        tanggal: tiket.tanggal_berangkat!,
+                                        tarif: tiket.tarif!,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                            ],
                           );
                         },
                       ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                    ],
-                  );
+                    );
+                  }
                 },
               ),
             ),

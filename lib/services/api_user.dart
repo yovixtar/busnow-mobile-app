@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:Busnow/models/auth_models.dart';
+import 'package:Busnow/config.dart';
 import 'package:Busnow/services/session.dart';
 import 'package:http/http.dart' as http;
 
-class APIAuthService {
-  String baseUrl = "https://busnow.iyabos.com/api";
+class APIUserService {
+  String baseUrl = Config.baseUrl;
 
   Future<Map<String, dynamic>> login({
     String? credential,
@@ -48,6 +48,25 @@ class APIAuthService {
       return {'success': "${responseData['message']}"};
     } else {
       return {'error': "Terjadi kendala, mohon tunggu sebentar lagi !"};
+    }
+  }
+
+  Future<Map<String, dynamic>> getSaldo() async {
+    var bearerToken = await SessionManager.getBearerToken();
+    if (bearerToken != null) {
+      var response = await http.get(
+        Uri.parse("$baseUrl/saldo"),
+        headers: {'Authorization': 'Bearer $bearerToken'},
+      );
+      var responseData = jsonDecode(response.body);
+      if (responseData['code'] == 200) {
+        var data = responseData['data'];
+        return {'saldo': "${data}"};
+      } else {
+        return {'saldo': "0 !"};
+      }
+    } else {
+      return {'saldo': "0 !!"};
     }
   }
 }

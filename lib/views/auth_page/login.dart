@@ -1,5 +1,4 @@
-import 'package:Busnow/models/auth_models.dart';
-import 'package:Busnow/services/api_auth.dart';
+import 'package:Busnow/services/api_user.dart';
 import 'package:Busnow/services/session.dart';
 import 'package:Busnow/views/auth_page/signup.dart';
 import 'package:Busnow/views/components/snackbar_utils.dart';
@@ -26,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       isLoading = true;
     });
-    final result = await APIAuthService().login(
+    final result = await APIUserService().login(
         credential: _emailController.text, password: _passwordController.text);
     if (result.containsKey('success')) {
       if (await SessionManager.hasToken()) {

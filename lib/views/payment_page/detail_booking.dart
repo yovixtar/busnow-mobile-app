@@ -2,26 +2,61 @@ import 'package:Busnow/views/home_page/home.dart';
 import 'package:Busnow/views/notification_page/detail_notif.dart';
 import 'package:Busnow/views/payment_page/metode_pembayaran.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BookingDetailPage extends StatefulWidget {
-  const BookingDetailPage({Key? key}) : super(key: key);
+  final String? asal;
+  final String? tujuan;
+  final String? kelas;
+  final String? tanggal;
+  final String? tarif;
+
+  const BookingDetailPage({
+    Key? key,
+    required this.asal,
+    required this.tujuan,
+    required this.kelas,
+    required this.tanggal,
+    required this.tarif,
+  }) : super(key: key);
 
   @override
   State<BookingDetailPage> createState() => _BookingDetailPageState();
 }
 
 class _BookingDetailPageState extends State<BookingDetailPage> {
-  final TextEditingController _namaController =
-      TextEditingController(text: 'Nama');
+  final TextEditingController _namaController = TextEditingController();
   final TextEditingController _keberangkatanController =
-      TextEditingController(text: 'Kota ke Kota');
-  final TextEditingController _kelasController =
-      TextEditingController(text: 'Ekonomi');
-  final TextEditingController _tanggalController =
-      TextEditingController(text: 'Hari, 01 Bulan 2024');
-  final TextEditingController _metodePembayaranController =
-      TextEditingController(text: 'Rp 200.000');
+      TextEditingController();
+  final TextEditingController _kelasController = TextEditingController();
+  final TextEditingController _tanggalController = TextEditingController();
+  final TextEditingController _tarifController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  String formatTanggal(String tanggal) {
+    DateTime date = DateTime.parse(tanggal);
+    return DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(date);
+  }
+
+  String formatRibuan(String harga) {
+    try {
+      return NumberFormat.currency(
+              locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0)
+          .format(int.parse(harga.replaceAll('.', '')));
+    } catch (e) {
+      return harga;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _keberangkatanController.text = "${widget.asal} - ${widget.tujuan}";
+    _kelasController.text = widget.kelas!;
+    _tanggalController.text = formatTanggal(widget.tanggal!);
+    _tarifController.text = formatRibuan(widget.tarif!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +170,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
             controller: controller,
             readOnly: !editable,
             decoration: InputDecoration(
-              hintText: label,
+              hintText: 'Masukan ${label}',
               fillColor: isSpecial ? Colors.white : Colors.transparent,
               filled: true,
               border: isSpecial
@@ -189,7 +224,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
             ],
           ),
           TextFormField(
-            controller: _metodePembayaranController,
+            controller: _tarifController,
             readOnly: true,
             decoration: InputDecoration(
               prefixText: 'Saldo  |  ',

@@ -139,12 +139,13 @@ class _CariTiketPageState extends State<CariTiketPage> {
                         keberangkatan: '00 : 00',
                         kedatangan: '00 : 00',
                         harga: 'Rp 205.000 / Seat',
+                        tanggal: '',
                         onPesan: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const BookingDetailPage(),
-                            ),
-                          );
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //     builder: (context) => const BookingDetailPage(),
+                          //   ),
+                          // );
                         },
                       ),
                       SizedBox(

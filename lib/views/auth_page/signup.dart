@@ -1,4 +1,4 @@
-import 'package:Busnow/services/api_auth.dart';
+import 'package:Busnow/services/api_user.dart';
 import 'package:Busnow/views/auth_page/login.dart';
 import 'package:Busnow/views/components/snackbar_utils.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +25,7 @@ class _SignUpPageState extends State<SignUpPage> {
     setState(() {
       isLoading = true;
     });
-    final result = await APIAuthService().signup(
+    final result = await APIUserService().signup(
       nama: _nameController.text,
       email: _emailController.text,
       username: _usernameController.text,

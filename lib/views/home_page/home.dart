@@ -1,8 +1,11 @@
+import 'package:Busnow/models/bus_models.dart';
+import 'package:Busnow/services/api_bus.dart';
+import 'package:Busnow/services/api_user.dart';
 import 'package:Busnow/views/components/bottom_nav.dart';
 import 'package:Busnow/views/search_page/cari_bus.dart';
-import 'package:Busnow/views/search_page/cari_tiket.dart';
 import 'package:Busnow/views/search_page/cari_tiket_by_agen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,6 +17,32 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _balanceController = TextEditingController();
+
+  late Future<Map<String, dynamic>> _dataSaldo;
+  late Future<List<DaftarBusModel>> _dataBus;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataSaldo = fetchSaldo();
+    _dataBus = fetchDaftarBus();
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      _dataBus = fetchDaftarBus();
+    });
+  }
+
+  Future<Map<String, dynamic>> fetchSaldo() async {
+    Map<String, dynamic> dataSaldo = await APIUserService().getSaldo();
+    return dataSaldo;
+  }
+
+  Future<List<DaftarBusModel>> fetchDaftarBus() async {
+    List<DaftarBusModel> dataBus = await APIBusService().getAllBus();
+    return dataBus;
+  }
 
   void _showComingSoonDialog() {
     showDialog(
@@ -66,6 +95,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Color(0xFFEEE7E7),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -166,11 +196,35 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                               SizedBox(height: 8),
-                              Text(
-                                'Rp 100.000',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _dataSaldo = APIUserService().getSaldo();
+                                  });
+                                },
+                                child: FutureBuilder<Map<String, dynamic>>(
+                                  future: _dataSaldo,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return CircularProgressIndicator();
+                                    } else if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    } else {
+                                      var saldo = snapshot.data!['saldo'];
+                                      var saldoFormatted =
+                                          NumberFormat.decimalPattern()
+                                              .format(double.parse(saldo));
+                                      return Text(
+                                        'Rp $saldoFormatted',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      );
+                                    }
+                                  },
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -209,81 +263,107 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Container(
-                color: Color(0xFFEEE7E7),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.8,
-                    ),
-                    itemCount: 14, // Replace with actual item count
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        color: Color(0xFFE5BFBF),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                'assets/images/bus.png',
-                                height: 64,
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Agen Bus',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Text(
-                                'Asal - Tujuan',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              Spacer(),
-                              Center(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const CariTiketByAgenPage(),
-                                      ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFFFC8F8F),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Pesan',
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                ),
-                              ),
-                            ],
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: FutureBuilder<List<DaftarBusModel>?>(
+                  future: _dataBus,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No data available'));
+                    } else {
+                      return RefreshIndicator(
+                        onRefresh: _refreshData,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 0.8,
                           ),
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            DaftarBusModel bus = snapshot.data![index];
+                            return Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              color: Color(0xFFE5BFBF),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.network(
+                                      bus.gambar!,
+                                      height: 64,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Image.asset(
+                                          'assets/images/bus.png',
+                                          height: 64,
+                                        );
+                                      },
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      bus.nama!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${bus.asal!} - ${bus.tujuan!}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                    Spacer(),
+                                    Center(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CariTiketByAgenPage(
+                                                id_bus: bus.id_bus!,
+                                                nama: bus.nama!,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xFFFC8F8F),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Pesan',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       );
-                    },
-                  ),
+                    }
+                  },
                 ),
               ),
             ],
