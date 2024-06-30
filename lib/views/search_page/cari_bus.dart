@@ -5,23 +5,43 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 class CariBusPage extends StatefulWidget {
-  const CariBusPage({Key? key}) : super(key: key);
+  const CariBusPage({
+    Key? key,
+    this.asal = '',
+    this.tujuan = '',
+    this.tanggalBerangkat = '',
+    this.formatedDate = '',
+    this.kursi = '',
+  }) : super(key: key);
+
+  final String? asal;
+  final String? tujuan;
+  final String? tanggalBerangkat;
+  final String? formatedDate;
+  final String? kursi;
 
   @override
   State<CariBusPage> createState() => _CariBusPageState();
 }
 
 class _CariBusPageState extends State<CariBusPage> {
-  final TextEditingController _dariController = TextEditingController();
+  final TextEditingController _asalController = TextEditingController();
   final TextEditingController _tujuanController = TextEditingController();
   final TextEditingController _tanggalController = TextEditingController();
   final TextEditingController _kursiController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  late String? _selectedTanggal;
 
   @override
   void initState() {
     super.initState();
     initializeDateFormatting('id_ID', null);
+
+    _asalController.text = widget.asal!;
+    _tujuanController.text = widget.tujuan!;
+    _tanggalController.text = widget.formatedDate!;
+    _kursiController.text = widget.kursi!;
+    _selectedTanggal = widget.tanggalBerangkat!;
   }
 
   void _selectDate() async {
@@ -35,8 +55,10 @@ class _CariBusPageState extends State<CariBusPage> {
     if (selectedDate != null) {
       String formattedDate =
           DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(selectedDate);
+      String isoFormattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
       setState(() {
         _tanggalController.text = formattedDate;
+        _selectedTanggal = isoFormattedDate;
       });
     }
   }
@@ -93,7 +115,7 @@ class _CariBusPageState extends State<CariBusPage> {
                           children: [
                             _buildInputField(
                               label: 'Dari',
-                              controller: _dariController,
+                              controller: _asalController,
                               hintText: 'Masukkan kota asal',
                             ),
                             _buildInputField(
@@ -126,7 +148,15 @@ class _CariBusPageState extends State<CariBusPage> {
                                           Navigator.of(context).push(
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  const CariTiketPage(),
+                                                  CariTiketPage(
+                                                asal: _asalController.text,
+                                                tujuan: _tujuanController.text,
+                                                tanggalBerangkat:
+                                                    _selectedTanggal!,
+                                                formatedDate:
+                                                    _tanggalController.text,
+                                                kursi: _kursiController.text,
+                                              ),
                                             ),
                                           );
                                         }

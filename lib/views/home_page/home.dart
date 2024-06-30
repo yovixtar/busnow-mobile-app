@@ -4,7 +4,7 @@ import 'package:Busnow/services/api_user.dart';
 import 'package:Busnow/views/components/bottom_nav.dart';
 import 'package:Busnow/views/components/snackbar_utils.dart';
 import 'package:Busnow/views/search_page/cari_bus.dart';
-import 'package:Busnow/views/search_page/cari_tiket_by_agen.dart';
+import 'package:Busnow/views/search_page/cari_tiket_by_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -304,7 +304,9 @@ class _HomePageState extends State<HomePage> {
                     } else if (snapshot.hasError) {
                       return Center(
                           child: Text(
-                              'Mohon maaf, data yang anda minta sedang tidak tersedia !'));
+                        'Mohon maaf, data yang anda minta sedang tidak tersedia !',
+                        textAlign: TextAlign.center,
+                      ));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Center(child: Text('No data available'));
                     } else {

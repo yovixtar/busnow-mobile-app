@@ -1,16 +1,54 @@
+import 'package:Busnow/models/tiket_models.dart';
+import 'package:Busnow/services/api_tiket.dart';
 import 'package:Busnow/views/payment_page/detail_booking.dart';
 import 'package:Busnow/views/search_page/cari_bus.dart';
 import 'package:Busnow/views/search_page/item_tiket.dart';
 import 'package:flutter/material.dart';
 
 class CariTiketPage extends StatefulWidget {
-  const CariTiketPage({Key? key}) : super(key: key);
+  const CariTiketPage({
+    Key? key,
+    required this.asal,
+    required this.tujuan,
+    required this.tanggalBerangkat,
+    required this.formatedDate,
+    required this.kursi,
+  }) : super(key: key);
 
+  final String asal;
+  final String tujuan;
+  final String tanggalBerangkat;
+  final String formatedDate;
+  final String kursi;
   @override
   State<CariTiketPage> createState() => _CariTiketPageState();
 }
 
 class _CariTiketPageState extends State<CariTiketPage> {
+  late Future<List<DaftarTiketModel>?> _dataTiket;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataTiket = fetchDaftarTiket();
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      _dataTiket = fetchDaftarTiket();
+    });
+  }
+
+  Future<List<DaftarTiketModel>> fetchDaftarTiket() async {
+    List<DaftarTiketModel> dataBus = await APITiketService().getTiketByFilter(
+      asal: widget.asal,
+      tujuan: widget.tujuan,
+      tanggalBerangkat: widget.tanggalBerangkat,
+      kursi: widget.kursi,
+    );
+    return dataBus;
+  }
+
   void _showChangeSearch() {
     showDialog(
       context: context,
@@ -29,7 +67,13 @@ class _CariTiketPageState extends State<CariTiketPage> {
               onPressed: () {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => const CariBusPage(),
+                    builder: (context) => CariBusPage(
+                      asal: widget.asal,
+                      tujuan: widget.tujuan,
+                      formatedDate: widget.formatedDate,
+                      kursi: widget.kursi,
+                      tanggalBerangkat: widget.tanggalBerangkat,
+                    ),
                   ),
                 );
               },
@@ -88,7 +132,7 @@ class _CariTiketPageState extends State<CariTiketPage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              'Kota Asal ke Kota Tujuan',
+                              '${widget.asal} ke ${widget.tujuan}',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -103,13 +147,13 @@ class _CariTiketPageState extends State<CariTiketPage> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    'Hari, 01 Bulan 2024',
+                                    widget.formatedDate,
                                     style: TextStyle(fontSize: 16),
                                   ),
                                 ),
                                 Expanded(
                                   child: Text(
-                                    '1 Kursi',
+                                    '${widget.kursi} Kursi',
                                     textAlign: TextAlign.right,
                                     style: TextStyle(fontSize: 16),
                                   ),
@@ -126,33 +170,59 @@ class _CariTiketPageState extends State<CariTiketPage> {
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 10, // Replace with actual item count
-                itemBuilder: (BuildContext context, int index) {
-                  return Column(
-                    children: [
-                      BusItem(
-                        agenBus: 'Agen Bus $index',
-                        kelasBus: 'Kelas Bus $index',
-                        keberangkatan: '00 : 00',
-                        kedatangan: '00 : 00',
-                        harga: 'Rp 205.000 / Seat',
-                        tanggal: '',
-                        onPesan: () {
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (context) => const BookingDetailPage(),
-                          //   ),
-                          // );
+              child: FutureBuilder<List<DaftarTiketModel>?>(
+                future: _dataTiket,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No data available'));
+                  } else {
+                    return RefreshIndicator(
+                      onRefresh: _refreshData,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: snapshot
+                            .data!.length, // Replace with actual item count
+                        itemBuilder: (BuildContext context, int index) {
+                          DaftarTiketModel tiket = snapshot.data![index];
+                          return Column(
+                            children: [
+                              BusItem(
+                                agenBus: tiket.nama_bus!,
+                                kelasBus: tiket.kelas!,
+                                keberangkatan: tiket.jam_berangkat!,
+                                kedatangan: tiket.jam_sampai!,
+                                harga: tiket.tarif!,
+                                tanggal: tiket.tanggal_berangkat!,
+                                onPesan: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => BookingDetailPage(
+                                        id_tiket: tiket.id_tiket!,
+                                        asal: tiket.asal!,
+                                        tujuan: tiket.tujuan!,
+                                        kelas: tiket.kelas!,
+                                        tanggal: tiket.tanggal_berangkat!,
+                                        tarif: tiket.tarif!,
+                                        kursi: widget.kursi,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                          );
                         },
                       ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                    ],
-                  );
+                    );
+                  }
                 },
               ),
             ),
