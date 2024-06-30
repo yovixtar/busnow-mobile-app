@@ -123,10 +123,10 @@ class _CariTiketByAgenPageState extends State<CariTiketByAgenPage> {
                                 harga: tiket.tarif!,
                                 tanggal: tiket.tanggal_berangkat!,
                                 onPesan: () {
-                                  print(tiket);
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) => BookingDetailPage(
+                                        id_tiket: tiket.id_tiket!,
                                         asal: tiket.asal!,
                                         tujuan: tiket.tujuan!,
                                         kelas: tiket.kelas!,

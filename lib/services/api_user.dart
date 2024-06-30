@@ -61,12 +61,50 @@ class APIUserService {
       var responseData = jsonDecode(response.body);
       if (responseData['code'] == 200) {
         var data = responseData['data'];
-        return {'saldo': "${data}"};
+        return {
+          'saldo': "${data}",
+          'success': "${responseData['message']}",
+        };
       } else {
-        return {'saldo': "0 !"};
+        return {
+          'saldo': "0 !",
+          'error': "Terjadi kendala, mohon tunggu sebentar lagi !",
+        };
       }
     } else {
-      return {'saldo': "0 !!"};
+      return {
+        'saldo': "0 !!",
+        'error': "Terjadi kendala, mohon tunggu sebentar lagi !",
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> addSaldo(String? saldo) async {
+    var bearerToken = await SessionManager.getBearerToken();
+    if (bearerToken != null) {
+      var response = await http.post(Uri.parse("$baseUrl/saldo"), headers: {
+        'Authorization': 'Bearer $bearerToken'
+      }, body: {
+        'saldo': saldo,
+      });
+      var responseData = jsonDecode(response.body);
+      if (responseData['code'] == 201) {
+        var data = responseData['data'];
+        return {
+          'saldo': "${data}",
+          'success': "${responseData['message']}",
+        };
+      } else {
+        return {
+          'saldo': "0 !",
+          'error': "Terjadi kendala, mohon tunggu sebentar lagi !",
+        };
+      }
+    } else {
+      return {
+        'saldo': "0 !!",
+        'error': "Terjadi kendala, mohon tunggu sebentar lagi !",
+      };
     }
   }
 }

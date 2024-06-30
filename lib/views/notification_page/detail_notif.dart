@@ -1,26 +1,63 @@
-import 'package:Busnow/views/home_page/home.dart';
-import 'package:Busnow/views/payment_page/metode_pembayaran.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NotificationDetailPage extends StatefulWidget {
-  const NotificationDetailPage({Key? key}) : super(key: key);
+  const NotificationDetailPage({
+    Key? key,
+    required this.nama,
+    required this.keberangkatan,
+    required this.kelas,
+    required this.tanggal,
+    required this.metode_pembayaran,
+    required this.total,
+    required this.waktu_pesan,
+  }) : super(key: key);
+
+  final String nama;
+  final String keberangkatan;
+  final String kelas;
+  final String tanggal;
+  final String metode_pembayaran;
+  final String total;
+  final String waktu_pesan;
 
   @override
   State<NotificationDetailPage> createState() => _NotificationDetailPageState();
 }
 
 class _NotificationDetailPageState extends State<NotificationDetailPage> {
-  final TextEditingController _namaController =
-      TextEditingController(text: 'Nama');
+  final TextEditingController _namaController = TextEditingController();
   final TextEditingController _keberangkatanController =
-      TextEditingController(text: 'Kota ke Kota');
-  final TextEditingController _kelasController =
-      TextEditingController(text: 'Ekonomi');
-  final TextEditingController _tanggalController =
-      TextEditingController(text: 'Hari, 01 Bulan 2024');
-  final TextEditingController _metodePembayaranController =
-      TextEditingController(text: 'Rp 200.000');
+      TextEditingController();
+  final TextEditingController _kelasController = TextEditingController();
+  final TextEditingController _tanggalController = TextEditingController();
+  final TextEditingController _totalController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _namaController.text = widget.nama;
+    _keberangkatanController.text = widget.keberangkatan;
+    _kelasController.text = widget.kelas;
+    _tanggalController.text = formatTanggal(widget.tanggal);
+    _totalController.text = formatRibuan(widget.total);
+  }
+
+  String formatTanggal(String tanggal) {
+    DateTime date = DateTime.parse(tanggal);
+    return DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(date);
+  }
+
+  String formatRibuan(String harga) {
+    try {
+      return NumberFormat.currency(
+              locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0)
+          .format(int.parse(harga.replaceAll('.', '')));
+    } catch (e) {
+      return harga;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +194,7 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
             style: TextStyle(fontSize: 16, color: Colors.black),
           ),
           TextFormField(
-            controller: _metodePembayaranController,
+            controller: _totalController,
             readOnly: true,
             decoration: InputDecoration(
               prefixText: 'Saldo  |  ',

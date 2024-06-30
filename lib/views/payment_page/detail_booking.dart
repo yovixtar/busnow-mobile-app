@@ -1,3 +1,5 @@
+import 'package:Busnow/services/api_payment.dart';
+import 'package:Busnow/views/components/snackbar_utils.dart';
 import 'package:Busnow/views/home_page/home.dart';
 import 'package:Busnow/views/notification_page/detail_notif.dart';
 import 'package:Busnow/views/payment_page/metode_pembayaran.dart';
@@ -5,19 +7,23 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class BookingDetailPage extends StatefulWidget {
+  final String? id_tiket;
   final String? asal;
   final String? tujuan;
   final String? kelas;
   final String? tanggal;
   final String? tarif;
+  final String? kursi;
 
   const BookingDetailPage({
     Key? key,
+    required this.id_tiket,
     required this.asal,
     required this.tujuan,
     required this.kelas,
     required this.tanggal,
     required this.tarif,
+    this.kursi = '',
   }) : super(key: key);
 
   @override
@@ -31,7 +37,10 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
   final TextEditingController _kelasController = TextEditingController();
   final TextEditingController _tanggalController = TextEditingController();
   final TextEditingController _tarifController = TextEditingController();
+  final TextEditingController _kursiController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  bool isLoading = false;
 
   String formatTanggal(String tanggal) {
     DateTime date = DateTime.parse(tanggal);
@@ -48,6 +57,26 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
     }
   }
 
+  handleBuyTiket() async {
+    setState(() {
+      isLoading = true;
+    });
+    final result = await APIPaymentService().buyTiket(
+      nama: _namaController.text,
+      id_tiket: widget.id_tiket,
+      kursi: _kursiController.text,
+    );
+    if (result.containsKey('id_tiket')) {
+      _showSuccessDialog(context, result);
+    } else {
+      _showFailedDialog(context, result['error']);
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +85,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
     _kelasController.text = widget.kelas!;
     _tanggalController.text = formatTanggal(widget.tanggal!);
     _tarifController.text = formatRibuan(widget.tarif!);
+    _kursiController.text = widget.kursi!;
   }
 
   @override
@@ -116,13 +146,23 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
                       controller: _tanggalController,
                       editable: false,
                     ),
+                    _buildInputField(
+                      label: 'Jumlah Kursi',
+                      controller: _kursiController,
+                      editable: (_kursiController.text != '') ? false : true,
+                      isNumber: true,
+                    ),
                     _buildPaymentMethodField(),
                     SizedBox(height: 16),
                     Center(
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _showSuccessDialog(context);
+                        onPressed: () async {
+                          if (isLoading) {
+                            null;
+                          } else {
+                            if (_formKey.currentState!.validate()) {
+                              handleBuyTiket();
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -133,10 +173,16 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
                           padding: EdgeInsets.symmetric(
                               vertical: 14, horizontal: 24),
                         ),
-                        child: Text(
-                          'Pesan Sekarang',
-                          style: TextStyle(color: Colors.black),
-                        ),
+                        child: isLoading
+                            ? CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              )
+                            : Text(
+                                'Pesan Sekarang',
+                                style: TextStyle(color: Colors.black),
+                              ),
                       ),
                     ),
                   ],
@@ -154,6 +200,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
     required TextEditingController controller,
     required bool editable,
     bool isSpecial = false,
+    bool isNumber = false,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -169,6 +216,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
           TextFormField(
             controller: controller,
             readOnly: !editable,
+            keyboardType: isNumber ? TextInputType.number : TextInputType.text,
             decoration: InputDecoration(
               hintText: 'Masukan ${label}',
               fillColor: isSpecial ? Colors.white : Colors.transparent,
@@ -187,7 +235,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
             style: TextStyle(color: Colors.black),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter $label';
+                return 'Mohon masukan $label';
               }
               return null;
             },
@@ -243,7 +291,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
     );
   }
 
-  void _showSuccessDialog(BuildContext context) {
+  void _showSuccessDialog(BuildContext context, result) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -272,13 +320,21 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
       // Navigator.of(context).pop();
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const NotificationDetailPage(),
+          builder: (context) => NotificationDetailPage(
+            nama: result['nama'],
+            keberangkatan: result['keberangkatan'],
+            kelas: result['kelas'],
+            tanggal: result['tanggal'],
+            metode_pembayaran: result['metode_pembayaran'],
+            total: result['total'],
+            waktu_pesan: result['waktu_pesan'],
+          ),
         ),
       );
     });
   }
 
-  void _showFailedDialog(BuildContext context) {
+  void _showFailedDialog(BuildContext context, error) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -295,7 +351,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
             ],
           ),
           content: Text(
-            "Periksa kembali pesanan Anda.",
+            error,
             textAlign: TextAlign.center,
           ),
         );

@@ -158,12 +158,12 @@ class NotificationItem extends StatelessWidget {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => NotificationDetailPage(),
-                    ),
-                  );
+                  // Navigator.of(context).pop();
+                  // Navigator.of(context).push(
+                  //   MaterialPageRoute(
+                  //     builder: (context) => NotificationDetailPage(),
+                  //   ),
+                  // );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFFC8F8F),

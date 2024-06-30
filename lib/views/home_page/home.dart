@@ -2,6 +2,7 @@ import 'package:Busnow/models/bus_models.dart';
 import 'package:Busnow/services/api_bus.dart';
 import 'package:Busnow/services/api_user.dart';
 import 'package:Busnow/views/components/bottom_nav.dart';
+import 'package:Busnow/views/components/snackbar_utils.dart';
 import 'package:Busnow/views/search_page/cari_bus.dart';
 import 'package:Busnow/views/search_page/cari_tiket_by_agen.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,8 @@ class _HomePageState extends State<HomePage> {
 
   late Future<Map<String, dynamic>> _dataSaldo;
   late Future<List<DaftarBusModel>> _dataBus;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -79,11 +82,37 @@ class _HomePageState extends State<HomePage> {
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                // Handle balance input
-                Navigator.of(context).pop();
-              },
-              child: Text('Isi Saldo'),
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      final result = await APIUserService()
+                          .addSaldo(_balanceController.text);
+                      if (result.containsKey('success')) {
+                        Navigator.of(context).pop();
+                        setState(() {
+                          _dataSaldo = APIUserService().getSaldo();
+                        });
+                      } else {
+                        setState(() {
+                          SnackbarUtils.showErrorSnackbar(
+                              context, result['error']);
+                        });
+                      }
+
+                      setState(() {
+                        isLoading = false;
+                      });
+                    },
+              child: isLoading
+                  ? CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.white,
+                      ),
+                    )
+                  : Text('Isi Saldo'),
             ),
           ],
         );
@@ -209,7 +238,9 @@ class _HomePageState extends State<HomePage> {
                                         ConnectionState.waiting) {
                                       return CircularProgressIndicator();
                                     } else if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
+                                      return Center(
+                                        child: Text('Silahkan reload!'),
+                                      );
                                     } else {
                                       var saldo = snapshot.data!['saldo'];
                                       var saldoFormatted =
@@ -271,7 +302,9 @@ class _HomePageState extends State<HomePage> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
+                      return Center(
+                          child: Text(
+                              'Mohon maaf, data yang anda minta sedang tidak tersedia !'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Center(child: Text('No data available'));
                     } else {
