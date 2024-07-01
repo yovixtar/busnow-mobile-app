@@ -55,6 +55,17 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
     }
   }
 
+  void _updateTarif() {
+    if (_kursiController.text.isNotEmpty) {
+      int jumlahKursi = int.tryParse(_kursiController.text) ?? 0;
+      int tarif = int.tryParse(widget.tarif!) ?? 0;
+      String totalTarif = formatRibuan((jumlahKursi * tarif).toString());
+      setState(() {
+        _tarifController.text = totalTarif;
+      });
+    }
+  }
+
   handleBuyTiket() async {
     setState(() {
       isLoading = true;
@@ -82,8 +93,10 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
     _keberangkatanController.text = "${widget.asal} - ${widget.tujuan}";
     _kelasController.text = widget.kelas!;
     _tanggalController.text = formatTanggal(widget.tanggal!);
-    _tarifController.text = formatRibuan(widget.tarif!);
     _kursiController.text = widget.kursi!;
+    _kursiController.addListener(_updateTarif);
+
+    _updateTarif();
   }
 
   @override
@@ -147,7 +160,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
                     _buildInputField(
                       label: 'Jumlah Kursi',
                       controller: _kursiController,
-                      editable: (_kursiController.text != '') ? false : true,
+                      editable: true,
                       isNumber: true,
                     ),
                     _buildPaymentMethodField(),
